@@ -7,10 +7,10 @@ class BaseAdmin(object):
     list_search = []
 class CustomerFollowUpAdmin(BaseAdmin):
     list_display = ['customer','consultant','date']
-    list_search = ['qq','name']
+    list_search = ['customer__qq','customer__name']
 
 class CustomerAdmin(BaseAdmin):
-    list_display = ['qq','name','source','consult_course']
+    list_display = ['id','qq','name','source','consult_course']
     list_filter = ['source','date','consult_course']
     list_search = ['qq','name']
 

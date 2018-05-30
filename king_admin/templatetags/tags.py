@@ -12,14 +12,20 @@ def get_query_sets(admin_class):
 
 
 @register.simple_tag
-def build_table_row(obj,admin_class):
+def build_table_row(request,obj,admin_class):
     row_ele = ""
-    for column in admin_class.list_display:
+    for index,column in enumerate(admin_class.list_display):
+        print('index',index,column,request.path)
         filed_obj = obj._meta.get_field(column) #获取字段类型
         if filed_obj.choices: #判断字段类型是choice的
             column_data = getattr(obj,"get_%s_display"%column)() #获取choice类型的数据
         else:
             column_data = getattr(obj,column) #获取其他类型的数据
+        if index == 0 :  #add tag ,可以跳转到修改页
+            column_data = "<a href='{request_path}/{obj_id}/change'>{data}</a>".format(request_path=request.path,
+                                                                                       obj_id=obj.id,
+                                                                                       data=column_data)
+
         row_ele += "<td>%s</td>" %column_data
     return  mark_safe(row_ele)
 

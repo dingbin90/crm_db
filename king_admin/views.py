@@ -57,9 +57,6 @@ def display_table_objs(request,app_name,tables_name):
         querysets = paginator.page(paginator.num_pages)
 
 
-
-
-
     return render(request,"king_admin/table_object.html",{'admin_class':admin_class,
                                                           'querysets':querysets,
                                                           "filter_condtions":filter_condtions,
@@ -67,3 +64,9 @@ def display_table_objs(request,app_name,tables_name):
                                                           }
                   )
 
+
+
+
+
+def table_obj_change(request,app_name,tables_name,obj_id):
+    return render(request,"king_admin/table_obj_change.html")
