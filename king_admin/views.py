@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 from king_admin import king_admin
 from django.db.models import Q
+from king_admin.forms import create_model_form
 
 # Create your views here.
 
@@ -44,7 +45,7 @@ def display_table_objs(request,app_name,tables_name):
     admin_class.filter_condtions = filter_condtions
     # print(request.GET)
 
-    paginator = Paginator(querysets,2)
+    paginator = Paginator(querysets,4) #分页，每页4条数据
     page = request.GET.get('_page')
 
     try:
@@ -64,9 +65,17 @@ def display_table_objs(request,app_name,tables_name):
                                                           }
                   )
 
+def table_obj_change(request,app_name,tables_name,obj__id):
+    admin_class = king_admin.enable_admins[app_name][tables_name]
+    model_form_class = create_model_form(request,admin_class)
+    obj = admin_class.model.objects.get(id=obj__id)
+    if request.method == "POST":
+        print('PST',request.POST)
+        form_obj = model_form_class(request.POST,instance=obj)
+        if form_obj.is_valid():
+            form_obj.save()
+    else:
+        print('id___________',obj__id)
+        form_obj = model_form_class(instance=obj)
 
-
-
-
-def table_obj_change(request,app_name,tables_name,obj_id):
-    return render(request,"king_admin/table_obj_change.html")
+    return render(request,"king_admin/table_obj_change.html",{'form_obj':form_obj})
