@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 from king_admin import king_admin
 from django.db.models import Q
@@ -20,7 +20,7 @@ def get_filter_result(request,querysets):
             filter_conditions[key] = val
 
     print(filter_conditions)
-    return querysets.filter(**filter_conditions),filter_conditions
+    return querysets.filter(**filter_conditions).order_by("-id"),filter_conditions
 
 def table_search(request,admin_class,querysets):
     search_key = request.GET.get('_q','')
@@ -38,6 +38,7 @@ def table_search(request,admin_class,querysets):
 def display_table_objs(request,app_name,tables_name):
     admin_class = king_admin.enable_admins[app_name][tables_name]
     querysets = admin_class.model.objects.all()
+    # table_name = admin_class.model._meta.verbose_name
     querysets,filter_condtions = get_filter_result(request,querysets)
     print("!!!!!bafa",filter_condtions)
 
@@ -75,7 +76,22 @@ def table_obj_change(request,app_name,tables_name,obj__id):
         if form_obj.is_valid():
             form_obj.save()
     else:
-        print('id___________',obj__id)
         form_obj = model_form_class(instance=obj)
 
-    return render(request,"king_admin/table_obj_change.html",{'form_obj':form_obj})
+    return render(request,"king_admin/table_obj_change.html",{'form_obj':form_obj,
+                                                              'admin_class':admin_class,
+                                                              })
+
+
+def table_obj_add(request,app_name,tables_name):
+    admin_class = king_admin.enable_admins[app_name][tables_name]
+    model_form_class = create_model_form(request, admin_class)
+    if request.method == "POST":
+        form_obj = model_form_class(request.POST)
+        if form_obj.is_valid():
+            form_obj.save()
+            return redirect(request.path.replace("/add/",""))
+    else:
+        form_obj = model_form_class()
+    return render(request,"king_admin/table_obj_add.html",{'form_obj':form_obj})
+

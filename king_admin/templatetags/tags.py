@@ -100,3 +100,29 @@ def render_paginator(querysets):
     ele += '</ul>'
 
     return mark_safe(ele)
+
+@register.simple_tag
+def get_model_name(admin_class):
+    return admin_class.model._meta.verbose_name
+
+@register.simple_tag
+def get_m2m_obj_list(admin_class,field,form_obj):
+    '''返回m2m待选数据'''
+    field_obj = getattr(admin_class.model,field.name)
+    all_obj_list = field_obj.rel.model.objects.all()
+    obj_instance_list = getattr(form_obj.instance,field.name)
+
+    selected_obj_list = obj_instance_list.all()
+    standby_obj_list = []
+    for obj in all_obj_list:
+        if obj not in selected_obj_list:
+            standby_obj_list.append(obj)
+
+    return standby_obj_list
+
+
+@register.simple_tag
+def get_m2m_selected_obj_list(form_obj,field):
+    '''返回以选择的数据'''
+    field_obj = getattr(form_obj.instance,field.name)
+    return field_obj.all()

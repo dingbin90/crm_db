@@ -9,7 +9,7 @@
        <form>
            {% for filter_column in admin_class.list_filter %}
 
-              {% build_filter_ele filter_column admin_class %}
+              {% build_filter_ele filter_column  admin_class%}
 
            {% endfor %}
            <input type="submit" value="过滤">
@@ -25,13 +25,14 @@
        </div>
 
        </form>
-
-
     </div>
 
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h3 class="panel-title">title</h3>
+            <h3 class="panel-title">{% get_model_name admin_class %}
+                <a href="{{ request.path }}/add/" class="pull-right">Add</a>
+            </h3>
+
         </div>
         <div class="panel-body">
             <table class="table table-hover">
@@ -42,7 +43,7 @@
                        {% endfor %}
                    </tr>
                 <tbody>
-{#                      {% get_query_sets admin_class as query_sets %}#}
+
                        {% for obj in querysets %}
                            <tr>{% build_table_row request obj admin_class %}</tr>
                        {% endfor %}
@@ -79,7 +80,3 @@
 
     </div>
 {% endblock %}
-
-
-
-{#<option value="11" selected></option>#}

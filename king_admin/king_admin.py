@@ -5,16 +5,17 @@ class BaseAdmin(object):
     list_display = []
     list_filter = []
     list_search = []
+    filter_horizontal = []
 class CustomerFollowUpAdmin(BaseAdmin):
     list_display = ['customer','consultant','date']
     list_search = ['customer__qq','customer__name']
     list_filter = ['customer','date','consultant']
-
+    filter_horizontal = ['']
 class CustomerAdmin(BaseAdmin):
     list_display = ['id','qq','name','source','consult_course']
     list_filter = ['source','date','consult_course']
     list_search = ['qq','name']
-
+    filter_horizontal = ['tags']
     #model = models.Customer 等同于 admin_class.model = model_class 绑定model   与 model_class对象
 
 def register(model_class,admin_class=None):
