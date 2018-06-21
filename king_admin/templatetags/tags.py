@@ -15,7 +15,7 @@ def get_query_sets(admin_class):
 def build_table_row(request,obj,admin_class):
     row_ele = ""
     for index,column in enumerate(admin_class.list_display):
-        print('index',index,column,request.path)
+        # print('index',index,column,request.path)
         filed_obj = obj._meta.get_field(column) #获取字段类型
         if filed_obj.choices: #判断字段类型是choice的
             column_data = getattr(obj,"get_%s_display"%column)() #获取choice类型的数据
@@ -110,9 +110,11 @@ def get_m2m_obj_list(admin_class,field,form_obj):
     '''返回m2m待选数据'''
     field_obj = getattr(admin_class.model,field.name)
     all_obj_list = field_obj.rel.model.objects.all()
-    obj_instance_list = getattr(form_obj.instance,field.name)
-
-    selected_obj_list = obj_instance_list.all()
+    if form_obj.instance.id:
+        obj_instance_list = getattr(form_obj.instance,field.name)
+        selected_obj_list = obj_instance_list.all()
+    else:
+        return all_obj_list
     standby_obj_list = []
     for obj in all_obj_list:
         if obj not in selected_obj_list:
@@ -124,5 +126,6 @@ def get_m2m_obj_list(admin_class,field,form_obj):
 @register.simple_tag
 def get_m2m_selected_obj_list(form_obj,field):
     '''返回以选择的数据'''
-    field_obj = getattr(form_obj.instance,field.name)
-    return field_obj.all()
+    if form_obj.instance.id:
+        field_obj = getattr(form_obj.instance,field.name)
+        return field_obj.all()

@@ -1,0 +1,19 @@
+{% extends "king_admin/index.html" %}
+{% block container %}
+{{ obj }}
+{#    {% for i in obj %}#}
+{#    {{ i.id }}#}
+{#    {{ i.qq }}#}
+{#    {{ i.name }}#}
+{#    {% endfor %}#}
+
+    <form method="post"> {% csrf_token %}
+    <input type="submit" class="btn btn-danger" value="yes,i am sure">
+    <input type="hidden" value="yes" name="delete_confirm">
+    <input type="hidden" value="{{ selected_ids }}" name="selected_ids">
+    <input type="hidden" value="{{ action }}" name="action">
+    <a class="btn btn-info" href="{% url 'table_jj' app_name table_name %}">No,Take me back</a>
+
+    </form>
+
+{% endblock %}

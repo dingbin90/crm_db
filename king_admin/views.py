@@ -37,10 +37,23 @@ def table_search(request,admin_class,querysets):
 
 def display_table_objs(request,app_name,tables_name):
     admin_class = king_admin.enable_admins[app_name][tables_name]
+    if request.method == "POST":
+        selected_ids = request.POST.get("selected_ids")
+        action = request.POST.get("action")
+        print('________>',selected_ids,action)
+        if selected_ids:
+            selected_objs = admin_class.model.objects.filter(id__in=selected_ids.split(','))
+        else:
+            raise KeyError("NO objects selected")
+        if hasattr(admin_class,action):
+            action_func = getattr(admin_class,action)
+            request._admin_action = action
+            return action_func(admin_class,request,selected_objs)
+
     querysets = admin_class.model.objects.all()
     # table_name = admin_class.model._meta.verbose_name
     querysets,filter_condtions = get_filter_result(request,querysets)
-    print("!!!!!bafa",filter_condtions)
+    # print("!!!!!bafa",filter_condtions)
 
     querysets = table_search(request,admin_class,querysets)
     admin_class.filter_condtions = filter_condtions
@@ -80,6 +93,8 @@ def table_obj_change(request,app_name,tables_name,obj__id):
 
     return render(request,"king_admin/table_obj_change.html",{'form_obj':form_obj,
                                                               'admin_class':admin_class,
+                                                              'app_name':app_name,
+                                                              'table_name':tables_name,
                                                               })
 
 
@@ -93,5 +108,23 @@ def table_obj_add(request,app_name,tables_name):
             return redirect(request.path.replace("/add/",""))
     else:
         form_obj = model_form_class()
-    return render(request,"king_admin/table_obj_add.html",{'form_obj':form_obj})
+    return render(request,"king_admin/table_obj_add.html",{'form_obj':form_obj,
+                                                           'admin_class':admin_class,
+                                                           })
 
+
+
+
+def table_obj_delete(request,app_name,tables_name,obj__id):
+    admin_class = king_admin.enable_admins[app_name][tables_name]
+    model_form_class = create_model_form(request,admin_class)
+    obj = admin_class.model.objects.get(id=obj__id)
+    if request.method == "POST":
+        obj.delete()
+        return redirect("/king_admin/%s/%s" %(app_name,tables_name))
+
+    return render(request,"king_admin/table_obj_delete.html",{'obj':obj,
+                                                              'admin_class':admin_class,
+                                                              'app_name':app_name,
+                                                              'table_name':tables_name,
+                                                              })
