@@ -1,9 +1,9 @@
 
-from django.urls import path,include
+from django.urls import path,include,re_path
 from crm import views
 
 urlpatterns = [
-    path('index/', views.index,name="sales_index"),
-    path('customers/',views.customer_list,name="customer_list"),
+    re_path('^$', views.index,name="sales_index"),
+    re_path('^customers/$',views.customer_list,name="customer_list"),
 
 ]

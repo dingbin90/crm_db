@@ -129,3 +129,11 @@ def get_m2m_selected_obj_list(form_obj,field):
     if form_obj.instance.id:
         field_obj = getattr(form_obj.instance,field.name)
         return field_obj.all()
+
+
+
+
+@register.simple_tag
+def get_action_verbose_name (admin_class, action):
+    action_name = getattr(admin_class,action)
+    return action_name.display_name if hasattr(action_name,'display_name') else action

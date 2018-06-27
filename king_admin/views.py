@@ -19,7 +19,7 @@ def get_filter_result(request,querysets):
         if val:
             filter_conditions[key] = val
 
-    print(filter_conditions)
+    #print(filter_conditions)
     return querysets.filter(**filter_conditions).order_by("-id"),filter_conditions
 
 def table_search(request,admin_class,querysets):
@@ -28,7 +28,7 @@ def table_search(request,admin_class,querysets):
     q_obj = Q()
     q_obj.connector = "OR"
     for conlum in admin_class.list_search:
-        print('conlum',conlum)
+       #print('conlum',conlum)
         q_obj.children.append(("%s__contains"%conlum,search_key))
     res = querysets.filter(q_obj)
     print("res",res)
@@ -40,7 +40,7 @@ def display_table_objs(request,app_name,tables_name):
     if request.method == "POST":
         selected_ids = request.POST.get("selected_ids")
         action = request.POST.get("action")
-        print('________>',selected_ids,action)
+        # print('________>',selected_ids,action)
         if selected_ids:
             selected_objs = admin_class.model.objects.filter(id__in=selected_ids.split(','))
         else:
@@ -84,7 +84,11 @@ def table_obj_change(request,app_name,tables_name,obj__id):
     model_form_class = create_model_form(request,admin_class)
     obj = admin_class.model.objects.get(id=obj__id)
     if request.method == "POST":
-        print('PST',request.POST)
+        # print('PST',request.POST)
+        # post_data = request.POST.copy()
+        # for filed in admin_class.readonly_filed:
+        #     filed_val = getattr(obj,filed)
+        #     post_data[filed] = filed_val
         form_obj = model_form_class(request.POST,instance=obj)
         if form_obj.is_valid():
             form_obj.save()
@@ -100,6 +104,7 @@ def table_obj_change(request,app_name,tables_name,obj__id):
 
 def table_obj_add(request,app_name,tables_name):
     admin_class = king_admin.enable_admins[app_name][tables_name]
+    admin_class.add_form = True
     model_form_class = create_model_form(request, admin_class)
     if request.method == "POST":
         form_obj = model_form_class(request.POST)
@@ -119,12 +124,18 @@ def table_obj_delete(request,app_name,tables_name,obj__id):
     admin_class = king_admin.enable_admins[app_name][tables_name]
     model_form_class = create_model_form(request,admin_class)
     obj = admin_class.model.objects.get(id=obj__id)
+    if admin_class.readonly_table:
+        errors = {"readonly_table": "table is readonly ,obj [%s] cannot be deleted" % obj}
+    else:
+        errors = {}
     if request.method == "POST":
-        obj.delete()
-        return redirect("/king_admin/%s/%s" %(app_name,tables_name))
+        if not admin_class.readonly_table:
+            obj.delete()
+            return redirect("/king_admin/%s/%s" %(app_name,tables_name))
 
     return render(request,"king_admin/table_obj_delete.html",{'obj':obj,
                                                               'admin_class':admin_class,
                                                               'app_name':app_name,
                                                               'table_name':tables_name,
+                                                              'errors':errors,
                                                               })

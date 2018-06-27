@@ -89,7 +89,9 @@ change
                $(this).prop("selected",true)
 
            })
-          {#return true#}
+
+           $('form').find('[disabled]').removeAttr('disabled');
+           return true
        }
     </script>
 

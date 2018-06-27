@@ -32,7 +32,7 @@
                <select id="action_list" name="action" class="form-control">
                    <option value="">--------</option>
                    {% for action in admin_class.actions %}
-                       <option value="{{ action }}">{{ action }}</option>
+                       <option value="{{ action }}">{% get_action_verbose_name admin_class action %} </option>
                    {% endfor %}
                </select>
            </div>
@@ -46,7 +46,7 @@
 
     </div>
 
-    <div class="panel panel-info">
+    <div class="panel panel-info" style="margin-top: 5px">
         <div class="panel-heading">
             <h3 class="panel-title">{% get_model_name admin_class %}
                 <a href="{{ request.path }}/add/" class="pull-right">Add</a>

@@ -15,7 +15,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">{{ request.user }}</a></li>
+            <li><a href="#">{{ request.user.userprofile.name }}</a></li>
           </ul>
           <form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
@@ -34,7 +34,7 @@
 
                   {% for menu in role.menu.all %}
 
-            <li class=""><a href="{% url menu.url_name %} ">{{ menu.name }} <span class="sr-only">(current)</span></a></li>
+            <li class=""><a href="{% if menu.url_type == 0 %}{% url menu.url_name %} {% else %} {{ menu.url_name }} {% endif %}">{{ menu.name }} <span class="sr-only">(current)</span></a></li>
               {% endfor %}
               {% endfor %}
           </ul>

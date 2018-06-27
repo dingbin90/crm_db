@@ -1,12 +1,12 @@
 {% extends "king_admin/index.html" %}
 {% block container %}
 {{ obj }}
-{#    {% for i in obj %}#}
-{#    {{ i.id }}#}
-{#    {{ i.qq }}#}
-{#    {{ i.name }}#}
-{#    {% endfor %}#}
 
+    <ul style="color: red">
+    {% for k,v in errors.items %}
+        <li>{{ k }}:{{ v }}</li>
+    {% endfor %}
+    </ul>
     <form method="post"> {% csrf_token %}
     <input type="submit" class="btn btn-danger" value="yes,i am sure">
     <input type="hidden" value="yes" name="delete_confirm">
