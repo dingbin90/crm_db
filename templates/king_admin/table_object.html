@@ -58,9 +58,11 @@
                 <thead>
                    <tr>
                        <th width="30px"><input type="checkbox" onclick="CheckAllToggle(this)"></th>
-                       {% for colum in admin_class.list_display %}
-                       <th>{{ colum }}</th>
+                       {% for colum in admin_class.list_display  %}
+
+                       <th>{% getverbosname admin_class colum request querysets %} </th>
                        {% endfor %}
+
                    </tr>
                 <tbody>
 

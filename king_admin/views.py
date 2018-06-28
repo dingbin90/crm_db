@@ -3,14 +3,16 @@ from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 from king_admin import king_admin
 from django.db.models import Q
 from king_admin.forms import create_model_form
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
-
+@login_required
 def index(request):
      #king_admin.enable_admins 获取enable_admin 的数据字典里面包含{crm:{customer:admin_class}}这样类型的字典
     return render(request,'king_admin/index.html',{'table_list':king_admin.enable_admins})
 
+@login_required
 def get_filter_result(request,querysets):
     filter_conditions = {}
     for key,val in request.GET.items():
@@ -22,6 +24,7 @@ def get_filter_result(request,querysets):
     #print(filter_conditions)
     return querysets.filter(**filter_conditions).order_by("-id"),filter_conditions
 
+@login_required
 def table_search(request,admin_class,querysets):
     search_key = request.GET.get('_q','')
     print("search",search_key)
@@ -34,7 +37,7 @@ def table_search(request,admin_class,querysets):
     print("res",res)
     return res
 
-
+@login_required
 def display_table_objs(request,app_name,tables_name):
     admin_class = king_admin.enable_admins[app_name][tables_name]
     if request.method == "POST":
@@ -79,6 +82,7 @@ def display_table_objs(request,app_name,tables_name):
                                                           }
                   )
 
+@login_required
 def table_obj_change(request,app_name,tables_name,obj__id):
     admin_class = king_admin.enable_admins[app_name][tables_name]
     model_form_class = create_model_form(request,admin_class)
@@ -101,7 +105,7 @@ def table_obj_change(request,app_name,tables_name,obj__id):
                                                               'table_name':tables_name,
                                                               })
 
-
+@login_required
 def table_obj_add(request,app_name,tables_name):
     admin_class = king_admin.enable_admins[app_name][tables_name]
     admin_class.add_form = True
@@ -119,7 +123,7 @@ def table_obj_add(request,app_name,tables_name):
 
 
 
-
+@login_required
 def table_obj_delete(request,app_name,tables_name,obj__id):
     admin_class = king_admin.enable_admins[app_name][tables_name]
     model_form_class = create_model_form(request,admin_class)

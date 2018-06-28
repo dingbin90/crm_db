@@ -45,7 +45,7 @@ class UserprofileAdmin(BaseAdmin):
     list_display = ['user','name']
 
 class CustomerAdmin(BaseAdmin):
-    list_display = ['id','qq','name','source','consult_course']
+    list_display = ['id','qq','name','source','consult_course','enroll']
     list_filter = ['source','date','consult_course']
     list_search = ['qq','name']
     filter_horizontal = ['tags']
@@ -54,7 +54,14 @@ class CustomerAdmin(BaseAdmin):
     def test(self,request,querysets):
         print('test')
     test.display_name = "测试动作"
-    readonly_table = True
+
+
+    def enroll(self):
+        name = '报名'
+        return '''<a href=%s/enrollment/>报名</a>''' %self.instance.id
+
+    enroll.display_name = "报名链接"
+    #readonly_table = True  #整张表只读
     #
     # def delete_selected_objs(self,request,querysets):
     #     # print('delete_selected_objs',self,request,querysets)

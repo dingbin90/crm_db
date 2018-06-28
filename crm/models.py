@@ -4,10 +4,10 @@ from django.contrib.auth.models import User
 # Create your models here.
 class Customer(models.Model):
     '''客户信息表1'''
-    name = models.CharField(max_length=32,blank=True,null=True)
+    name = models.CharField(max_length=32,blank=True,null=True,verbose_name='姓名')
     qq = models.CharField(max_length=64,unique=True)
-    qq_name = models.CharField(max_length=64,blank=True,null=True)
-    phone = models.CharField(max_length=64,blank=True,null=True)
+    qq_name = models.CharField(max_length=64,blank=True,null=True,verbose_name='qq姓名')
+    phone = models.CharField(max_length=64,blank=True,null=True,verbose_name='电话号码')
     source_choices = ((0,'转介绍'),
                       (1,'QQ'),
                       (2,'官网'),
@@ -16,7 +16,7 @@ class Customer(models.Model):
                       (5,'知乎'),
                       (6,'市场推广'),
                       )
-    source = models.SmallIntegerField(choices=source_choices)
+    source = models.SmallIntegerField(choices=source_choices,verbose_name='客户来源')
     referral_from = models.CharField(verbose_name="转介绍人QQ",max_length=64,blank=True,null=True)
     consult_course = models.ForeignKey("Course",verbose_name="咨询课程",on_delete=models.CASCADE)
     content = models.TextField(verbose_name="咨询详情")
@@ -31,12 +31,12 @@ class Customer(models.Model):
     class Meta:
         verbose_name = "客户信息表"
 
-
 class Tag(models.Model):
     name = models.CharField(unique=True,max_length=32)
 
     def __str__(self):
         return self.name
+
 class CustomeFollowUp(models.Model):
     '''客户跟进表'''
     customer = models.ForeignKey("Customer",on_delete=models.CASCADE)
@@ -58,6 +58,7 @@ class CustomeFollowUp(models.Model):
     class Meta:
         verbose_name = "客户跟进"
         verbose_name_plural = "客户跟进"
+
 class Course(models.Model):
     '''课程表'''
     name = models.CharField(max_length=64,unique=True)
@@ -66,12 +67,14 @@ class Course(models.Model):
     outline = models.TextField()
     def __str__(self):
         return self.name
+
 class Branch(models.Model):
     '''校区'''
     name = models.CharField(max_length=128,unique=True)
     addr = models.CharField(max_length=128)
     def __str__(self):
         return self.name
+
 class Class_List(models.Model):
     '''班级表'''
     branch = models.ForeignKey("Branch",on_delete=models.CASCADE)
@@ -91,8 +94,6 @@ class Class_List(models.Model):
     class Meta:
         unique_together = ('branch','course','semester')
 
-
-
 class CourseRecord(models.Model):
     '''上课记录'''
     from_class = models.ForeignKey("Class_List",verbose_name="班级",on_delete=models.CASCADE)
@@ -110,8 +111,6 @@ class CourseRecord(models.Model):
     class Meta:
         unique_together = ("from_class","day_num")
         verbose_name = "上课记录"
-
-
 
 class Enrollment(models.Model):
     '''报名表'''
@@ -154,7 +153,6 @@ class StudyRecord(models.Model):
     class Meta:
         verbose_name = "学习记录"
 
-
 class Payment(models.Model):
     '''缴费表'''
     customer = models.ForeignKey("Customer",on_delete=models.CASCADE)
@@ -165,6 +163,7 @@ class Payment(models.Model):
 
     def __str__(self):
         return "%s  %s" %(self.customer,self.amount)
+
 class UserProfile(models.Model):
     '''账号表'''
     user = models.OneToOneField(User,on_delete=models.CASCADE)
@@ -187,6 +186,7 @@ class Role(models.Model):
     class Meta:
         verbose_name = "角色表"
         verbose_name_plural = "角色表"
+
 class Menu(models.Model):
     '''菜单'''
     name = models.CharField(max_length=32)

@@ -1,5 +1,6 @@
 from django import template
 from django.utils.safestring import mark_safe
+from django.core.exceptions import FieldDoesNotExist
 import datetime,time
 register = template.Library()
 @register.simple_tag
@@ -16,16 +17,22 @@ def build_table_row(request,obj,admin_class):
     row_ele = ""
     for index,column in enumerate(admin_class.list_display):
         # print('index',index,column,request.path)
-        filed_obj = obj._meta.get_field(column) #获取字段类型
-        if filed_obj.choices: #判断字段类型是choice的
-            column_data = getattr(obj,"get_%s_display"%column)() #获取choice类型的数据
-        else:
-            column_data = getattr(obj,column) #获取其他类型的数据
-        if index == 0 :  #add tag ,可以跳转到修改页
-            column_data = "<a href='{request_path}/{obj_id}/change'>{data}</a>".format(request_path=request.path,
-                                                                                       obj_id=obj.id,
-                                                                                       data=column_data)
-
+        try:
+            filed_obj = obj._meta.get_field(column) #获取字段类型
+            if filed_obj.choices: #判断字段类型是choice的
+                column_data = getattr(obj,"get_%s_display"%column)() #获取choice类型的数据
+            else:
+                column_data = getattr(obj,column) #获取其他类型的数据
+            if index == 0 :  #add tag ,可以跳转到修改页
+                column_data = "<a href='{request_path}/{obj_id}/change'>{data}</a>".format(request_path=request.path,
+                                                                                           obj_id=obj.id,
+                                                                                         data=column_data)
+        except FieldDoesNotExist as e:
+            if hasattr(admin_class,column):
+                column_func = getattr(admin_class,column)
+                admin_class.instance = obj
+                admin_class.request = request
+                column_data = column_func()
         row_ele += "<td>%s</td>" %column_data
     return  mark_safe(row_ele)
 
@@ -84,7 +91,6 @@ def render_paginator(querysets):
         <li class=""><a href="?_page=%s" >&laquo</a></li>
          ''' % querysets.previous_page_number()
 
-
     for i in querysets.paginator.page_range:
 
         if abs(querysets.number - i) < 2:
@@ -130,10 +136,17 @@ def get_m2m_selected_obj_list(form_obj,field):
         field_obj = getattr(form_obj.instance,field.name)
         return field_obj.all()
 
-
-
-
 @register.simple_tag
 def get_action_verbose_name (admin_class, action):
     action_name = getattr(admin_class,action)
     return action_name.display_name if hasattr(action_name,'display_name') else action
+
+@register.simple_tag
+def getverbosname (admin_class, colum,request, querysets):  #客户信息显示中文字段verbose_name
+    try:
+        return admin_class.model._meta.get_field(colum).verbose_name.upper()
+    except FieldDoesNotExist as e :
+        # for obj in querysets:
+        #     admin_class.instance = obj
+        column_verbose_name = getattr(admin_class, colum).display_name
+        return column_verbose_name
