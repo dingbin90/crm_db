@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+
+
+{% block body %}
+<div class="container col-lg-8 col-md-offset-2">
+
+    <div class="panel panel-success ">
+      <div class="panel-heading">
+        <h3 class="panel-title">报名入学</h3>
+      </div>
+     <div class="panel-body">
+         {{ customer_form.errors }}
+         {% if status != 1 %}
+          <form class="form-horizontal" role="form" method="post" onsubmit="return RegisterFormCheck()" >{% csrf_token %}
+              {% for field in customer_form %}
+               <div class="form-group">
+                <label  class="col-sm-2 control-label"> {{ field.label }}</label>
+                <div class="col-sm-9">
+                  {{ field }}
+                </div>
+              </div>
+
+               {% endfor %}
+          <hr>
+            <div class="form-group">
+                <label  class="col-sm-2 control-label">所报课程:</label>
+                <div class="col-sm-9">
+                  {{ enroll_obj.enrolled_class}}
+                </div>
+              </div>
+
+
+            <div class="form-group">
+                <label  class="col-sm-2 control-label">课程费用:</label>
+                <div class="col-sm-9">
+                  {{ enroll_obj.enrolled_class.course.price}}
+                </div>
+              </div>
+
+
+             <div class="form-group">
+                <label  class="col-sm-2 control-label">开课日期:</label>
+                <div class="col-sm-9">
+                  {{ enroll_obj.date}}
+                </div>
+              </div>
+           <div class="form-group" >
+                <div class="col-sm-12">
+                  <pre style="height: 450px;overflow: auto" >{{ enroll_obj.enrolled_class.contract.template}}</pre>
+                </div>
+              </div>
+           <div class="col-sm-12">
+                    <input type="checkbox" name="contract_agreed" > 我已认真阅读完协议并接受所有条款
+                </div>
+             <input type="submit" class="btn btn-info" value="提交">
+          </form>
+         {% else %}
+          <h2>3423423423423423</h2>
+          {% endif %}
+     </div>
+
+
+    </div>
+</div>
+    <script>
+       function RegisterFormCheck() {
+           if ($("form :checkbox").prop("checked")) {
+               $("form").find("[disabled]").removeAttr("disabled");
+               return true;
+           }
+           else{
+               alert("必须同意条款");
+               return false;
+           }
+
+           
+       }
+    
+    
+    </script>
+    
+{% endblock %}
+
+

@@ -73,7 +73,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'crm_db.wsgi.application'
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
 
+}
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 

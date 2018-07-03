@@ -75,6 +75,15 @@ class Branch(models.Model):
     def __str__(self):
         return self.name
 
+
+class ContractTemplate(models.Model):
+    '''合同表'''
+    name = models.CharField('合同名称',max_length=64,unique=True)
+    template = models.TextField()
+
+    def __str__(self):
+        return self.name
+
 class Class_List(models.Model):
     '''班级表'''
     branch = models.ForeignKey("Branch",on_delete=models.CASCADE)
@@ -83,6 +92,7 @@ class Class_List(models.Model):
                           (1,'面授（周末）'),
                           (2,'网络班'),
                           )
+    contract = models.ForeignKey('ContractTemplate',blank=True,null=True,on_delete=models.CASCADE)
     class_type = models.SmallIntegerField(choices=class_type_choices,verbose_name="班级类型")
     semester = models.PositiveSmallIntegerField(verbose_name="学期")
     teachers = models.ManyToManyField("UserProfile")

@@ -58,7 +58,7 @@ class CustomerAdmin(BaseAdmin):
 
     def enroll(self):
         name = '报名'
-        return '''<a href=%s/enrollment/>报名</a>''' %self.instance.id
+        return '''<a href=/crm/customer/%s/enrollment/>报名</a>''' %self.instance.id
 
     enroll.display_name = "报名链接"
     #readonly_table = True  #整张表只读
